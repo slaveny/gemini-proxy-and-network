@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gemini Чат Интерфейс</title>
+    <style>
+        :root {
+            --bg-color: #131314;
+            --chat-bg: rgba(30, 30, 32, 0.65);
+            --text-color: #e3e3e3;
+            --accent-color: #a8c7fa;
+            --user-msg: rgba(43, 42, 51, 0.85);
+            --bot-msg: rgba(30, 30, 32, 0.85);
+            --input-bg: #282a2d;
+            --border-color: #444746;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/logo.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: contain;
+            opacity: 0.18;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        header {
+            background-color: #1e1e20;
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--accent-color);
+        }
+
+        .config-panel {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        select, input[type="password"] {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 8px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        input[type="password"] {
+            width: 140px;
+        }
+
+        #chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            box-sizing: border-box;
+            -webkit-overflow-scrolling: touch;
+            z-index: 5;
+        }
+
+        .message {
+            padding: 10px 14px;
+            border-radius: 12px;
+            max-width: 85%;
+            line-height: 1.4;
+            word-wrap: break-word;
+            font-size: 0.95rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .user {
+            background-color: var(--user-msg);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            border: 1px solid rgba(168, 199, 250, 0.2);
+        }
+
+        .model {
+            background-color: var(--bot-msg);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .system-error {
+            background-color: #5a1818;
+            color: #ffb4ab;
+            align-self: center;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        #input-container {
+            padding: 10px 15px;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            z-index: 10;
+        }
+
+        .input-wrapper {
+            max-width: 800px;
+            width: 100%;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            background: var(--input-bg);
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+        }
+
+        textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            font-size: 1rem;
+            padding: 4px 0;
+            max-height: 120px;
+            height: 24px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: var(--accent-color);
+            color: #001d35;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.9rem;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+            flex-shrink: 0;
+        }
+
+        button:hover { opacity: 0.9; }
+        button:disabled {
+            background: var(--border-color);
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 480px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .config-panel {
+                width: 100%;
+                justify-content: space-between;
+            }
+            select, input[type="password"] {
+                flex: 1;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Fascinating Rose</h1>
+    <div class="config-panel">
+        <select id="model-select">
+            <option value="models/gemini-3.5-flash">Gemini 3.5 Flash</option>
+            <option value="models/gemini-3.1-pro-preview">Gemini 3.1 Pro Preview</option>
+            <option value="models/gemini-3.7-flash">Gemini 3.7 Flash</option>
+            <option value="models/gemini-3.1-flash-image">Gemini 3.1 Flash Image</option>
+            <option value="models/gemini-2.5-flash-preview-tts">⭐ Gemini 2.5 Flash TTS</option>
+            <option value="models/gemini-3.5-transcribe">⭐ Gemini 3.5 Transcribe</option>
+        </select>
+        <input type="password" id="api-key" placeholder="API Key">
+    </div>
+</header>
+
+<div id="chat-container">
+    <div class="message model">Привет! Я готов к работе через ваш локальный прокси. Введите ваш API-ключ вверху страницы, выберите модель и задайте вопрос.</div>
+</div>
+
+<div id="input-container">
+    <div class="input-wrapper">
+        <textarea id="user-input" placeholder="Введите запрос..." rows="1"></textarea>
+        <button id="send-btn" onclick="sendMessage()">Отправить</button>
+    </div>
+</div>
+
+<script src="/chat.js"></script>
+</body>
+</html>
