@@ -4,6 +4,8 @@
 
 ### 🌹 Fascinating Rose : Responsive Web Interface and AI Proxy for Gemini API in Docker
 
+![Fascinating Rose](html/logo.png)
+
 **Fascinating Rose** is a lightweight, fully mobile-responsive chat web interface with a built-in Python proxy for working with the Google Gemini API (Free Tier). The project is designed using a microservices architecture, fully isolated within a Docker network, and secured with end-to-end SSL encryption powered by Nginx.
 
 It is a custom-tailored modification (a fork of sorts) of the project by `rainy351/gemini_proxy`.
