@@ -12,6 +12,7 @@ It is a custom-tailored modification (a fork of sorts) of the project by `rainy3
 
 The project folder contains a currently up-to-date `allmodells.txt`.
 Key differences include a dedicated Web interface and model selection;
+<img width="1080" height="2400" alt="Screenshot_2026-11-08-08-57-53-981_com android chrome" src="https://github.com/user-attachments/assets/63d31b2b-d44c-45a1-9dc0-8bd1a953e607" />
 
 ---
 
