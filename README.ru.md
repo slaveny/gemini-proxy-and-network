@@ -12,6 +12,7 @@
 
 В папке проекта имеются актуальные на данный момент `allmodells.txt`.
 Отличается наличием Web-интерфейса и выбором модели; 
+<img width="1080" height="2400" alt="Screenshot_2026-11-17-12-45-52-024_com android chrome" src="https://github.com/user-attachments/assets/ce92c007-8b4e-4632-97ea-e8ec33774334" />
 
 ---
 
